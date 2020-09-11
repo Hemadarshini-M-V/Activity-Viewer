@@ -17,4 +17,5 @@
 
 >  To start the front-end, open a terminal in Activity-Viewer/client folder 
    and run the command: npm start
-   
+ 
+>  Dummy activity data is present in routes/router.js file.

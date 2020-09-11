@@ -135,17 +135,20 @@ class App extends Component{
     
     //Checking whether there are actvities on selected date
     if(selectedDateActivities.length === 0){
-      return "No activities on "+selectedDate;
+      return ( <p class="noActivities">No activities on {selectedDate}</p>);
     }
     else{
       var showselectedDateActivities = [];
       for(let j=0; j<selectedDateActivities.length; j++){
         var listItem = (
-          <li key={j}> 
-            Start time : {selectedDateActivities[j]['start_time']}
+          <>
+            <li key={j} class="activities"> 
+              Start time : {selectedDateActivities[j]['start_time']}
+              <br/>
+              End time : {selectedDateActivities[j]['end_time']}
+            </li>
             <br/>
-            End time : {selectedDateActivities[j]['end_time']}
-          </li>
+          </>
         );
         showselectedDateActivities.push(listItem);
       }
@@ -178,6 +181,7 @@ class App extends Component{
     for(let i=0; i<activityData.length; i++){
       var actRow = (
         <tr key = {activityData[i].id}>
+          <td>{i+1}</td>
           <td><Button variant="link" onClick={()=>this.showModal(activityData[i])}> 
             {activityData[i].real_name}
             </Button></td>
@@ -190,7 +194,12 @@ class App extends Component{
     var dateValueCalendar = this.state.selectedDate;
     return (
       <>
-      <Table striped bordered hover>
+      <Table striped bordered hover class="activityTable">
+        <thead class="tableHeading">
+          <td>Sl no</td>
+          <td>User Name</td>
+          <td>Time Zone</td>
+        </thead>
         <tbody>
           {activities}
         </tbody>
@@ -198,21 +207,31 @@ class App extends Component{
 
       <Modal show={this.state.showModal} onHide={this.hideModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Activities of {currUser.real_name}</Modal.Title>
+          <Modal.Title class="modalTitle">
+              Activities of {currUser.real_name}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <ul>
-            {this.listOfActivities()}
-          </ul>
-          <input type="date" defaultValue = {dateValueCalendar} 
-            onChange={(e)=>{this.dateValueCalendarChanged(e)}}/>
+          <p>
+            <ul>
+              {this.listOfActivities()}
+            </ul>
+          </p>
+          <hr/>
+          <label class="calendarLabel" 
+            for="selectedDate">Select date to view activities:
+          </label>
+          <br/>
+          <input id="selectedDate" type="date" defaultValue = {dateValueCalendar} 
+            onChange={(e)=>{this.dateValueCalendarChanged(e)}}
+            max={this.today()}/>
         </Modal.Body>
         <Modal.Footer>
-          <p>
-            Note: All times have been converted to local time (Indian time).
+          <p class="note"><i>
+            <b>Note:</b> All times have been converted to local time (Indian time).
             For example, if activity time for a user from Kathmandu was 
             5:15 PM, it'll be shown as 5:00 PM in corresponding local time.
-          </p>
+          </i></p>
           <Button variant="danger" onClick={this.hideModal}>
             Close
           </Button>
@@ -226,7 +245,8 @@ class App extends Component{
   render= ()=>{
     return (
       <div className="App">
-        <h4>Activity Viewer</h4>
+        <br/>
+        <p class="mainHeading">Activity Viewer</p>
         {this.displayActivities()}
       </div>
     );

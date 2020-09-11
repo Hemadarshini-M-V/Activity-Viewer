@@ -122,6 +122,63 @@ var activities = {
 					"end_time": "Sep 11 2020 8:12AM"
 				}
 			]
+		},
+		{
+			"id": "W17GANSA3",
+			"real_name": "Amahle Nkosi",
+			"tz": "Africa/Johannesburg",
+			"activity_periods": [{
+					"start_time": "Aug 20 2020 4:20PM",
+					"end_time": "Aug 20 2020 6:10PM"
+				},
+				{
+					"start_time": "Apr 17 2020 7:30AM",
+					"end_time": "Apr 17 2020 11:42AM"
+				},
+				{
+					"start_time": "Sep 11 2020 11:00PM",
+					"end_time": "Sep 12 2020 02:00AM"
+				}
+				
+			]
+		},
+		{
+			"id": "W17HDDSA7",
+			"real_name": "Hugo Bless",
+			"tz": "Europe/Paris",
+			"activity_periods": [{
+					"start_time": "Jul 14 2020 3:40PM",
+					"end_time": "Jul 14 2020 7:21PM"
+				},
+				{
+					"start_time": "Oct 2 2019 2:45AM",
+					"end_time": "Oct 2 2019 05:12AM"
+				},
+				{
+					"start_time": "Sep 5 2020 10:20AM",
+					"end_time": "Sep 5 2020 02:15PM"
+				}
+				
+			]
+		},
+		{
+			"id": "W23HDESX1",
+			"real_name": "Hermione Granger",
+			"tz": "Australia/Sydney",
+			"activity_periods": [{
+					"start_time": "Jul 31 2020 8:45AM",
+					"end_time": "Jul 31 2020 2:46PM"
+				},
+				{
+					"start_time": "Jun 1 2020 2:40PM",
+					"end_time": "Jun 1 2020 04:36PM"
+				},
+				{
+					"start_time": "Aug 26 2020 10:28AM",
+					"end_time": "Aug 26 2020 11:59AM"
+				}
+				
+			]
 		}
 	]
 };

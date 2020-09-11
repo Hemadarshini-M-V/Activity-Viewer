@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  padding-left: 70px;
+  padding-right: 70px;
 }
 
 .App-logo {
@@ -37,6 +39,45 @@
   }
 }
 
-table{
-  width: 70%
+.activityTable{
+  width: 30%;
+  margin: auto;
+}
+  
+.note{
+  font-size: x-small;
+}
+
+.calendarLabel{
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-stretch: wider;
+  color: brown;
+  font-style: bold;
+}
+
+.noActivities{
+  color: blue;
+  font-size: medium;
+}
+
+.activities{
+  color: darkblue;
+  font-size: medium;
+}
+
+.modalTitle{
+  text-align: center;
+  font-size: 28px;
+  color: teal;
+}
+
+.mainHeading{
+  font-size: 32px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  color: slateblue;
+}
+
+.tableHeading{
+  color: darkmagenta;
+  font-weight: bold;
 }
