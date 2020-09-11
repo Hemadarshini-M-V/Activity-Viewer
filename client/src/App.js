@@ -30,11 +30,15 @@ class App extends Component{
   //Function to set up the selected user's activity data for the modal
   setUpModal = (currUser)=>{
     this.setState({currentUser: currUser});
-    var selectedDate = this.state.selectedDate;
-    var todayDate = new Date(selectedDate);
     // console.log(todayDate);
     // console.log(typeof(todayDate));
-    // this.setUpSelectedActivities();
+    var selectedDateByUser = this.state.selectedDate;
+    this.setUpSelectedActivities(currUser, selectedDateByUser);
+  }
+
+  setUpSelectedActivities = (currUser, selectedDateByUser)=>{
+    // var selectedDateByUser = this.state.selectedDate;
+    var selectedDate = new Date(selectedDateByUser);
     var selectedDateActivities = [];
     var activity_periods = currUser.activity_periods;
     var timeZone = currUser.tz;
@@ -43,9 +47,9 @@ class App extends Component{
       let start_time = activity.start_time;
       let end_time = activity.end_time;
       let startTimeDate = this.convertToDate(start_time,timeZone);
-      if(startTimeDate.getFullYear() === todayDate.getFullYear()
-        && startTimeDate.getMonth() === todayDate.getMonth() 
-        && startTimeDate.getDate() === todayDate.getDate()){
+      if(startTimeDate.getFullYear() === selectedDate.getFullYear()
+        && startTimeDate.getMonth() === selectedDate.getMonth() 
+        && startTimeDate.getDate() === selectedDate.getDate()){
           var endTimeDate = this.convertToDate(end_time,timeZone);
           var convertedActivity = {
             start_time : startTimeDate.toDateString() + 
@@ -57,7 +61,6 @@ class App extends Component{
         }
     }
     this.setState({currentUserSelectedDateActivities : selectedDateActivities});
-    
   }
 
   //Function to convert the given string to date object in local time
@@ -136,9 +139,7 @@ class App extends Component{
     var currUser = this.state.currentUser;
     console.log("currUser-->"+currUser);
     console.log("type of currUser-->"+typeof(currUser));
-    // if(Object.keys(currUser).length !=0){
-    //   this.setUpModal(currUser);
-    // }
+
     if(selectedDateActivities.length === 0){
       return "No activities on "+selectedDate;
     }
@@ -174,6 +175,9 @@ class App extends Component{
   dateValueCalendarChanged = (e)=>{
     var changedDate = e.target.value;
     this.setState({selectedDate: changedDate});
+    var currUser = this.state.currentUser;
+    this.setUpSelectedActivities(currUser, changedDate);
+    
   }  
 
   displayActivities = ()=>{
@@ -213,6 +217,11 @@ class App extends Component{
             onChange={(e)=>{this.dateValueCalendarChanged(e)}}/>
         </Modal.Body>
         <Modal.Footer>
+          <p>
+            Note: All times have been converted to local time (Indian time).
+            For example, if activity time for a user from Kathmandu was 
+            5:15 PM, it'll be shown as 5:00 PM in corresponding local time.
+          </p>
           <Button variant="danger" onClick={this.hideModal}>
             Close
           </Button>
