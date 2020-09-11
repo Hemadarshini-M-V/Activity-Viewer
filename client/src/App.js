@@ -13,41 +13,55 @@ class App extends Component{
       activityData: [],
       showModal : false,
       currentUser : {},
-      currentUserTodayActivities: []
+      // currentUserTodayActivities: [],
+      currentUserSelectedDateActivities: [],
+      selectedDate: this.today()
     }
   }
 
 
   showModal = (currUser) => {
     this.setState({ showModal: true });
-    // console.log(currUser);
+    this.setState({ selectedDate: this.today()})
     this.setUpModal(currUser);
     
   };
 
   //Function to set up the selected user's activity data for the modal
-  setUpModal(currUser){
+  setUpModal = (currUser)=>{
     this.setState({currentUser: currUser});
-    var todayDate = new Date();
-    var todayActivities = [];
+    var selectedDate = this.state.selectedDate;
+    var todayDate = new Date(selectedDate);
+    // console.log(todayDate);
+    // console.log(typeof(todayDate));
+    // this.setUpSelectedActivities();
+    var selectedDateActivities = [];
     var activity_periods = currUser.activity_periods;
     var timeZone = currUser.tz;
     for(let i=0; i<activity_periods.length; i++){
       let activity = activity_periods[i];
       let start_time = activity.start_time;
+      let end_time = activity.end_time;
       let startTimeDate = this.convertToDate(start_time,timeZone);
       if(startTimeDate.getFullYear() === todayDate.getFullYear()
         && startTimeDate.getMonth() === todayDate.getMonth() 
         && startTimeDate.getDate() === todayDate.getDate()){
-          todayActivities.push(activity);
+          var endTimeDate = this.convertToDate(end_time,timeZone);
+          var convertedActivity = {
+            start_time : startTimeDate.toDateString() + 
+                         " " + startTimeDate.toLocaleTimeString(),
+            end_time : endTimeDate.toDateString() +
+                        " " + endTimeDate.toLocaleTimeString()
+          };
+          selectedDateActivities.push(convertedActivity);
         }
     }
-    this.setState({currentUserTodayActivities : todayActivities});
+    this.setState({currentUserSelectedDateActivities : selectedDateActivities});
     
   }
 
   //Function to convert the given string to date object in local time
-  convertToDate(dateString, timeZone){
+  convertToDate = (dateString, timeZone)=>{
     var splits = dateString.split(" ");
     console.log("splits-->"+splits);
     splits[1] = splits[1]+",";
@@ -56,11 +70,15 @@ class App extends Component{
      givenTime = givenTime.replace("AM",":00");
     }
     else if(givenTime.substr(-2)==="PM"){
-       console.log("klk");
-      var hoursInTwentyFourFormat = parseInt(givenTime.substr(0,2)) + 12;
       var hours = givenTime.split(":")[0];
-      givenTime = givenTime.replace(hours,hoursInTwentyFourFormat.toString());
-      givenTime = givenTime.replace("PM",":00");
+      if(hours === "12"){
+        givenTime = givenTime.replace("PM",":00");
+      }
+      else{
+        var hoursInTwentyFourFormat = parseInt(givenTime.substr(0,2)) + 12;
+        givenTime = givenTime.replace(hours,hoursInTwentyFourFormat.toString());
+        givenTime = givenTime.replace("PM",":00");
+      }
     }
     console.log("givenTIme-->"+givenTime);
     splits[3] = givenTime;
@@ -83,7 +101,7 @@ class App extends Component{
 
 
   //Function to change date given in a particular time zone to local time
-  changeTimezone(date, givenTZ) {
+  changeTimezone = (date, givenTZ)=> {
 
     var invdate = new Date(date.toLocaleString('en-US', {
       timeZone: givenTZ
@@ -97,7 +115,7 @@ class App extends Component{
   hideModal = () => {
     this.setState({ showModal: false });
   };
-  componentDidMount(){
+  componentDidMount = ()=>{
     this.fetchAllActivities();
   }
   fetchAllActivities = ()=>{
@@ -113,24 +131,50 @@ class App extends Component{
   }
 
   listOfActivities = ()=>{
-    var todayActivities = this.state.currentUserTodayActivities;
-    console.log("From listOfActivities function , todayActivities");
-    for(let p =0; p<todayActivities.length; p++){
-      console.log(Object.values(todayActivities[p]));
+    var selectedDateActivities = this.state.currentUserSelectedDateActivities;
+    var selectedDate = this.state.selectedDate;
+    var currUser = this.state.currentUser;
+    console.log("currUser-->"+currUser);
+    console.log("type of currUser-->"+typeof(currUser));
+    // if(Object.keys(currUser).length !=0){
+    //   this.setUpModal(currUser);
+    // }
+    if(selectedDateActivities.length === 0){
+      return "No activities on "+selectedDate;
     }
-    var showTodayActivities = [];
-    for(let j=0; j<todayActivities.length; j++){
-      var listItem = (
-        <li key={j}> 
-          Start time : {todayActivities.start_time}
-          End time : {todayActivities.end_time}
-        </li>
-      );
-      showTodayActivities.push(listItem);
+    else{
+      // console.log("From listOfActivities function , selectedDateActivities");
+      // for(let p =0; p<selectedDateActivities.length; p++){
+      //   console.log(Object.values(selectedDateActivities[p]));
+      // }
+      var showselectedDateActivities = [];
+      for(let j=0; j<selectedDateActivities.length; j++){
+        var listItem = (
+          <li key={j}> 
+            Start time : {selectedDateActivities[j]['start_time']}
+            <br/>
+            End time : {selectedDateActivities[j]['end_time']}
+          </li>
+        );
+        showselectedDateActivities.push(listItem);
+      }
+      return showselectedDateActivities;
     }
-    return showTodayActivities;
   }
 
+  //Function to convert today's date to string
+  today = ()=>{
+    let d = new Date();
+    let currDate = d.getDate();
+    let currMonth = d.getMonth()+1;
+    let currYear = d.getFullYear();
+    return currYear + "-" + ((currMonth<10) ? '0'+currMonth : currMonth )+ "-" + ((currDate<10) ? '0'+currDate : currDate );
+  }
+
+  dateValueCalendarChanged = (e)=>{
+    var changedDate = e.target.value;
+    this.setState({selectedDate: changedDate});
+  }  
 
   displayActivities = ()=>{
     var activityData = this.state.activityData;
@@ -147,7 +191,8 @@ class App extends Component{
       );
       activities.push(actRow);
     }
-    
+
+    var dateValueCalendar = this.state.selectedDate;
     return (
       <>
       <Table striped bordered hover>
@@ -164,6 +209,8 @@ class App extends Component{
           <ul>
             {this.listOfActivities()}
           </ul>
+          <input type="date" defaultValue = {dateValueCalendar} 
+            onChange={(e)=>{this.dateValueCalendarChanged(e)}}/>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={this.hideModal}>
@@ -174,7 +221,7 @@ class App extends Component{
       </>
     );
   }
-  render(){
+  render= ()=>{
     return (
       <div className="App">
         <h4>Activity Viewer</h4>
