@@ -2,6 +2,7 @@
 var express = require('express');
 var cors = require('cors');
 
+//Imports from other files
 var router = require('./routes/router');
 var requestLogger = require('./utilities/requestLogger');
 var errorHandler = require('./utilities/errorHandler');
@@ -21,10 +22,8 @@ app.use(router);
 //Handling errors using error handler
 app.use(errorHandler);
 
-
+//Server listening to port 8081
 app.listen(8081);
 console.log("Server started listening at 8081 port");
-
-
 
 module.exports = app;

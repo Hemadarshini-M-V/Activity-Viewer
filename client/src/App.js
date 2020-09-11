@@ -1,8 +1,10 @@
+//Imports 
 import React, { Component } from 'react';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
+//Imports from different files
 import './App.css';
 import { fetchActivities } from './service';
 
@@ -10,38 +12,37 @@ class App extends Component{
   constructor(){
     super();
     this.state = {
-      activityData: [],
-      showModal : false,
-      currentUser : {},
-      // currentUserTodayActivities: [],
-      currentUserSelectedDateActivities: [],
-      selectedDate: this.today()
+      activityData: [],    //To store activity data
+      showModal : false,   //Boolean to hide & show modal
+      currentUser : {},    //To store selected user
+      currentUserSelectedDateActivities: [],       
+      //To store activities of current user on selected date
+      selectedDate: this.today()   //Initialising selected date to today 
     }
   }
 
-
+  //Function to show modal when the user clicks on a particular user name
   showModal = (currUser) => {
-    this.setState({ showModal: true });
-    this.setState({ selectedDate: this.today()})
-    this.setUpModal(currUser);
-    
+    this.setState({ showModal: true });    //Showing the modal
+    this.setState({ selectedDate: this.today()});     
+    this.setUpModal(currUser);     //Setting up data for selected user
   };
 
   //Function to set up the selected user's activity data for the modal
   setUpModal = (currUser)=>{
-    this.setState({currentUser: currUser});
-    // console.log(todayDate);
-    // console.log(typeof(todayDate));
+    this.setState({currentUser: currUser});  
     var selectedDateByUser = this.state.selectedDate;
     this.setUpSelectedActivities(currUser, selectedDateByUser);
   }
 
+  //Function to set up activities for the selected date 
   setUpSelectedActivities = (currUser, selectedDateByUser)=>{
-    // var selectedDateByUser = this.state.selectedDate;
     var selectedDate = new Date(selectedDateByUser);
     var selectedDateActivities = [];
     var activity_periods = currUser.activity_periods;
     var timeZone = currUser.tz;
+
+    //Checking for each activity listed for a match with selected date 
     for(let i=0; i<activity_periods.length; i++){
       let activity = activity_periods[i];
       let start_time = activity.start_time;
@@ -66,7 +67,6 @@ class App extends Component{
   //Function to convert the given string to date object in local time
   convertToDate = (dateString, timeZone)=>{
     var splits = dateString.split(" ");
-    console.log("splits-->"+splits);
     splits[1] = splits[1]+",";
     var givenTime = splits[3];
     if(givenTime.substr(-2)==="AM"){
@@ -83,44 +83,39 @@ class App extends Component{
         givenTime = givenTime.replace("PM",":00");
       }
     }
-    console.log("givenTIme-->"+givenTime);
     splits[3] = givenTime;
     dateString = splits.join(" ");
-    // console.log(dateString);
  
-   var thereDate = new Date(dateString);
-   var hereDate = this.changeTimezone(thereDate, timeZone);
-   console.log("thereDate-->"+thereDate);
-   console.log("type of thereDate-->",typeof(thereDate));
-   console.log("hereDate"+hereDate);
-   console.log("type of hereDate"+typeof(hereDate));
- 
-    
+    var thereDate = new Date(dateString);
+    var hereDate = this.changeTimezone(thereDate, timeZone);  //Changing time zone
     return hereDate;
  }
  
-
-
-
-
-  //Function to change date given in a particular time zone to local time
+ 
+  //Function to change date given in a particular time zone to local ti
   changeTimezone = (date, givenTZ)=> {
-
     var invdate = new Date(date.toLocaleString('en-US', {
       timeZone: givenTZ
     }));
-  
+
+    //Getting differnce in time zones
     var diff = date.getTime() - invdate.getTime();
-  
+    
+    //Using the difference obtained to convert to local time
     return new Date(date.getTime() + diff);
   }
   
+  //Function to hide modal when close is clicked
   hideModal = () => {
     this.setState({ showModal: false });
   };
+
+  //Processing once component mounts
   componentDidMount = ()=>{
     this.fetchAllActivities();
   }
+
+  //Function to fetch all the activities from back-end using service
   fetchAllActivities = ()=>{
     fetchActivities().then(suc=>{
       if(suc.data.ok === true){
@@ -133,21 +128,16 @@ class App extends Component{
     })
   }
 
+  //Function to render the activites of the user on selected date
   listOfActivities = ()=>{
     var selectedDateActivities = this.state.currentUserSelectedDateActivities;
     var selectedDate = this.state.selectedDate;
-    var currUser = this.state.currentUser;
-    console.log("currUser-->"+currUser);
-    console.log("type of currUser-->"+typeof(currUser));
-
+    
+    //Checking whether there are actvities on selected date
     if(selectedDateActivities.length === 0){
       return "No activities on "+selectedDate;
     }
     else{
-      // console.log("From listOfActivities function , selectedDateActivities");
-      // for(let p =0; p<selectedDateActivities.length; p++){
-      //   console.log(Object.values(selectedDateActivities[p]));
-      // }
       var showselectedDateActivities = [];
       for(let j=0; j<selectedDateActivities.length; j++){
         var listItem = (
@@ -172,14 +162,15 @@ class App extends Component{
     return currYear + "-" + ((currMonth<10) ? '0'+currMonth : currMonth )+ "-" + ((currDate<10) ? '0'+currDate : currDate );
   }
 
+  //Function to change activity details when date is changed in the calendar
   dateValueCalendarChanged = (e)=>{
     var changedDate = e.target.value;
     this.setState({selectedDate: changedDate});
     var currUser = this.state.currentUser;
     this.setUpSelectedActivities(currUser, changedDate);
-    
   }  
 
+  //Function to render all activities and the modal
   displayActivities = ()=>{
     var activityData = this.state.activityData;
     var currUser = this.state.currentUser;
@@ -230,6 +221,8 @@ class App extends Component{
       </>
     );
   }
+
+  //Function to render the component
   render= ()=>{
     return (
       <div className="App">
